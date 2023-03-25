@@ -1,3 +1,5 @@
+import 'package:flash_light/flutter_sample.dart';
+import 'package:flash_light/lamp.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -34,7 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-      child: Column(children: []),
+      child: Container(
+          color: Colors.red,
+          height: 400,
+          width: 300,
+          child: Column(children: [DraggableCard(child: Text('Hello'))])),
     ));
   }
 }
