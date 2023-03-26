@@ -91,7 +91,7 @@ class _DraggableCardState extends State<DraggableCard>
           setState(() {
             // if (details.delta.dx != _dragAlignment.x) {
             print('change');
-            angle = atan(_dragAlignment.y / _dragAlignment.x);
+            angle = tan(_dragAlignment.y / _dragAlignment.x);
             print('angle is $angle');
             //}
             _dragAlignment += Alignment(

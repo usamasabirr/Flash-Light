@@ -1,3 +1,5 @@
+import 'package:flash_light/custom_line.dart';
+import 'package:flash_light/dragable_example.dart';
 import 'package:flash_light/flutter_sample.dart';
 import 'package:flash_light/lamp.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
@@ -36,11 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-      child: Container(
-          color: Colors.red,
-          height: 400,
-          width: 300,
-          child: Column(children: [DraggableCard(child: Text('Hello'))])),
+      child: Change(),
     ));
   }
 }
