@@ -2,6 +2,7 @@ import 'package:flash_light/custom_line.dart';
 import 'package:flash_light/dragable_example.dart';
 import 'package:flash_light/flutter_sample.dart';
 import 'package:flash_light/lamp.dart';
+import 'package:flash_light/try/animate_path_try.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Change(),
+      home: MyPathAnimation(),
     );
   }
 }
