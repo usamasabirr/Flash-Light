@@ -38,7 +38,7 @@ class _MyPathAnimationState extends State<MyPathAnimation>
         }
       });
 
-    _animationController.forward();
+    //_animationController.forward();
   }
 
   @override
@@ -50,10 +50,19 @@ class _MyPathAnimationState extends State<MyPathAnimation>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: CustomPaint(
-          painter: MyPainter(_animation.value, startPosition, endPosition),
-        ),
+      body: Column(
+        children: [
+          Center(
+            child: CustomPaint(
+              painter: MyPainter(_animation.value, startPosition, endPosition),
+            ),
+          ),
+          ElevatedButton(
+              onPressed: () {
+                _animationController.forward();
+              },
+              child: Text('child'))
+        ],
       ),
     );
   }
@@ -116,7 +125,7 @@ class MyPainter extends CustomPainter {
 
   Path _createAnyPath(startPosition, endPosition) {
     return Path()
-      ..moveTo(startPosition.dx + 7, startPosition.dy)
+      ..moveTo(startPosition.dx + 10, startPosition.dy)
       ..quadraticBezierTo(startPosition.dx + 15, startPosition.dy + 45,
           startPosition.dx - 15, startPosition.dy + 40)
       ..quadraticBezierTo(startPosition.dx - 20, startPosition.dy + 48,
@@ -129,9 +138,9 @@ class MyPainter extends CustomPainter {
         _createAnyPath(startPosition, endPosition), _animationValue);
 
     final Paint paint = Paint();
-    paint.color = Colors.amberAccent;
+    paint.color = Colors.grey;
     paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = 10.0;
+    paint.strokeWidth = 4.0;
 
     canvas.drawPath(path, paint);
     // Add path points here based on your needs

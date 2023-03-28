@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   drawing_animation: ^1.0.1
   animated_path: ^0.0.2
+  spring: ^2.0.2
 
 dev_dependencies:
   flutter_test:

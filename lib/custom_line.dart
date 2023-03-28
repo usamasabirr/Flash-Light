@@ -1,5 +1,6 @@
 import 'package:animated_path/animated_path.dart';
 import 'package:drawing_animation/drawing_animation.dart';
+import 'package:flash_light/try/animate_path_try.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
@@ -9,7 +10,6 @@ class LinePainter extends CustomPainter {
   LinePainter(this.startPosition, this.endPosition);
   @override
   void paint(Canvas canvas, Size size) {
-    print('size is $size');
     Paint paint = Paint()
       ..color = Colors.grey
       ..strokeWidth = 4;
@@ -128,7 +128,7 @@ class _ChangeState extends State<Change> with SingleTickerProviderStateMixin {
   bool showMain = true;
 
   late Animation<Offset> _animation;
-  late Animation<Path> _curve1Animation;
+  late Animation<double> _curve1Animation;
   late AnimationController _controller;
   bool run = true;
 
@@ -184,26 +184,42 @@ class _ChangeState extends State<Change> with SingleTickerProviderStateMixin {
 
     startPosition = Offset(x1, y1);
     endPosition = Offset(x2, y2);
-    curvedPaths.add(calculatePath1());
-    curvedPaths.add(calculatePath2());
+
     _controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
 
-    _controller.addListener(() {
-      if (_controller.isCompleted) {
-        setState(() {
-          showMain = false;
-          showCurve[0] = true;
-          hide();
-        });
-
-        _controller.forward();
-      }
-      setState(() {
-        endPosition = _animation.value;
-        // path = _curve1Animation.value;
+    _curve1Animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Interval(0.5, 0.7, curve: Curves.linear),
+    ))
+      ..addListener(() {
+        //print('value is ${_curve1Animation.value.toDouble()}');
+        if (_controller.value > 0.94 && _controller.value < 1) {
+          setState(() {
+            showMain = true;
+            showCurve[0] = false;
+          });
+        }
+        setState(() {});
       });
-    });
+
+    //_controller.forward();
+
+    // _controller.addListener(() {
+    //   if (_controller.isCompleted) {
+    //     setState(() {
+    //       showMain = false;
+    //       showCurve[0] = true;
+    //       hide();
+    //     });
+
+    //     _controller.forward();
+    //   }
+    //   setState(() {
+    //     endPosition = _animation.value;
+    //     // path = _curve1Animation.value;
+    //   });
+    // });
   }
 
   @override
@@ -222,9 +238,7 @@ class _ChangeState extends State<Change> with SingleTickerProviderStateMixin {
         child: Stack(children: [
           showMain == true
               ? GestureDetector(
-                  onPanDown: (details) {
-                    print('down');
-                  },
+                  onPanDown: (details) {},
                   onPanUpdate: (details) {
                     setState(() {
                       endPosition = Offset(
@@ -232,20 +246,38 @@ class _ChangeState extends State<Change> with SingleTickerProviderStateMixin {
                     });
                   },
                   onPanEnd: (details) {
-                    print('this');
                     _animation = Tween<Offset>(
                       begin: endPosition,
                       end: Offset(100, 350),
-                    ).animate(CurvedAnimation(
-                      parent: _controller,
-                      curve: Interval(0, 0.5, curve: Curves.linear),
-                    ));
-                    // Path temp = Path();
-                    // temp.moveTo(startPosition.dx + 7, startPosition.dy);
-                    // _curve1Animation =
-                    //     Tween<Path>(begin: temp, end: curvedPaths[0]).animate(
-                    //         CurvedAnimation(
-                    //             parent: _controller, curve: Interval(0.5, 1)));
+                    ).animate(
+                      CurvedAnimation(
+                        parent: _controller,
+                        curve: Interval(0, 0.5, curve: Curves.linear),
+                      ),
+                    )
+                      ..addListener(() {
+                        print('val is ${_controller.value}');
+                        if (_controller.value > 0.5 &&
+                            _controller.value < 0.52) {
+                          setState(() {
+                            print('inside');
+                            showMain = false;
+                            showCurve[0] = true;
+                          });
+                        }
+                        setState(() {
+                          endPosition = _animation.value;
+                        });
+                      })
+                      ..addStatusListener((status) {
+                        if (status == AnimationStatus.completed) {
+                          //_controller.reverse();
+                        }
+                      });
+
+                    print((startPosition - endPosition).distance);
+
+                    _controller.addListener(() {});
 
                     _controller.forward();
                   },
@@ -255,19 +287,18 @@ class _ChangeState extends State<Change> with SingleTickerProviderStateMixin {
                   ),
                 )
               : IgnorePointer(),
-          AnimatedPath(
-            animation: _controller.view,
-            path: Path()
-              ..moveTo(100, 100)
-              ..relativeLineTo(400, 0)
-              ..relativeLineTo(0, 400)
-              ..relativeLineTo(-400, 0)
-              ..relativeLineTo(0, -400),
-            paint: Paint(),
-            start: Tween(begin: 0.0, end: 0.7),
-            end: Tween(begin: 0.0, end: 1.0),
-            offset: Tween(begin: 0.0, end: 0.3),
-          )
+
+          showCurve[0] == true
+              ? CustomPaint(
+                  painter: MyPainter(
+                      _curve1Animation.value, startPosition, endPosition),
+                  child: SizedBox())
+              : IgnorePointer()
+
+          // CustomPaint(
+          //     child: Container(),
+          //     painter: MyPainter(
+          //         _curve1Animation.value, startPosition, endPosition)),
           // AnimatedDrawing.paths(this.curvedPaths,
           //     width: 20,
           //     height: 100,
