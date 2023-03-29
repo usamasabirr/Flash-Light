@@ -6,10 +6,10 @@ class ColorOn {
   final greyColor = Color(0xff29363D);
 }
 
-class LinePainter extends CustomPainter {
+class CordPainter extends CustomPainter {
   Offset startPosition;
   Offset endPosition;
-  LinePainter(this.startPosition, this.endPosition);
+  CordPainter(this.startPosition, this.endPosition);
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
@@ -24,114 +24,67 @@ class LinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(LinePainter oldDelegate) => true;
+  bool shouldRepaint(CordPainter oldDelegate) => true;
 }
 
-// class CurveLeft1 extends CustomPainter {
-//   double curve;
-//   double height;
-//   CurveLeft1(this.curve, this.height);
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     final path = Path();
-//     path.moveTo(100, 100);
-//     path.quadraticBezierTo(curve, 100, 100, 140);
-//     // path.moveTo(100, 140);
-//     // path.quadraticBezierTo(100 + curve, 140, 100, 180 - height);
-
-//     final Paint paint = Paint();
-//     paint.color = Colors.grey;
-//     paint.style = PaintingStyle.stroke;
-//     paint.strokeWidth = 4.0;
-//     paint.strokeCap = StrokeCap.round;
-
-//     canvas.drawPath(path, paint);
-//     // Add path points here based on your needs
-//   }
-
-//   @override
-//   bool shouldRepaint(CurveLeft1 oldDelegate) {
-//     return true;
-//   }
-// }
-
-class CurveRight1 extends CustomPainter {
+class AnimatedCordPainter extends CustomPainter {
   Offset startPosition;
   double curve;
   double height;
   double height2;
-  CurveRight1(this.startPosition, this.curve, this.height, this.height2);
+  AnimatedCordPainter(
+      this.startPosition, this.curve, this.height, this.height2);
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path();
+
     final Paint paint = Paint();
     paint.color = Colors.black;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 4.0;
     paint.strokeCap = StrokeCap.round;
+
     path.moveTo(startPosition.dx, startPosition.dy);
     path.quadraticBezierTo(startPosition.dx + curve, startPosition.dy + 20,
         startPosition.dx, startPosition.dy + 40);
-    //path.quadraticBezierTo(100, 145, 100, 140);
     path.quadraticBezierTo(startPosition.dx + height, startPosition.dy + 60,
         startPosition.dx, startPosition.dy + 100 + height2);
     canvas.drawCircle(
         Offset(startPosition.dx, startPosition.dy + 100 + height2), 2, paint);
-
-    // Path path = Path()
-    //   ..moveTo(50, 100)
-    //   ..quadraticBezierTo(75, 125, 50, 150) // first quadratic Bezier curve
-    //   ..quadraticBezierTo(25, 175, 50, 200); // second quadratic Bezier curve
-    // // ..lineTo(250, 150) // connect the two curves with a straight line
-    // // ..lineTo(50, 150) // close the path
-    // //..close();
 
     canvas.drawPath(path, paint);
     // Add path points here based on your needs
   }
 
   @override
-  bool shouldRepaint(CurveRight1 oldDelegate) {
+  bool shouldRepaint(AnimatedCordPainter oldDelegate) {
     return true;
   }
 }
 
-class MultiTween extends StatefulWidget {
+class Development extends StatefulWidget {
   double mediaWidth;
   double mediaHeight;
-  MultiTween({super.key, required this.mediaWidth, required this.mediaHeight});
+  Development({super.key, required this.mediaWidth, required this.mediaHeight});
 
   @override
-  State<MultiTween> createState() => _CordStretchState();
+  State<Development> createState() => _CordStretchState();
 }
 
-class _CordStretchState extends State<MultiTween>
+class _CordStretchState extends State<Development>
     with SingleTickerProviderStateMixin {
-  double start1 = 1.0;
-  // double start2 =
   late Offset startPosition;
   late Offset endPosition;
+
   late AnimationController animationController;
-  late Animation animationLeft1;
-  late Animation animationLeft2;
+  late Animation upperCurveAnimation;
+  late Animation lowerCurveAnimation;
+  late Animation lowerCurveCompressAnimation;
 
-  double rightTween1Begin = 1.0;
-  double rightTween1End = 50.0;
+  bool showAnimation = false;
+  bool showCord = true;
 
-  double rightTween2Begin = 1.0;
-  double rightTween2End = 20.0;
-
-  late Animation animationRight1;
-  late Animation animationRight2;
-
-  late Animation animation;
-  late Animation animation2;
-  late Animation animation3;
-
-  final angleStart = 0.0;
-  double angleEnd = 50;
-
-  late var sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
+  late var upperCurveTween = TweenSequence(<TweenSequenceItem<double>>[
     TweenSequenceItem(tween: Tween(begin: 0.0, end: 45.0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: 45.0, end: -45.0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: -45.0, end: 25.0), weight: 20),
@@ -139,7 +92,7 @@ class _CordStretchState extends State<MultiTween>
     TweenSequenceItem(tween: Tween(begin: -25.0, end: 0), weight: 20),
   ]);
 
-  var sizeAnimation2 = TweenSequence(<TweenSequenceItem<double>>[
+  var lowerCurveTween = TweenSequence(<TweenSequenceItem<double>>[
     TweenSequenceItem(tween: Tween(begin: 0.0, end: -50.0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: -50.0, end: 50.0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: 50.0, end: -25.0), weight: 20),
@@ -147,7 +100,7 @@ class _CordStretchState extends State<MultiTween>
     TweenSequenceItem(tween: Tween(begin: 25.0, end: 0), weight: 20),
   ]);
 
-  var sizeAnimation3 = TweenSequence(<TweenSequenceItem<double>>[
+  var lowerCurveCompressTween = TweenSequence(<TweenSequenceItem<double>>[
     TweenSequenceItem(tween: Tween(begin: 0.0, end: -20), weight: 20),
     TweenSequenceItem(tween: Tween(begin: -20, end: 0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: 0, end: -10), weight: 20),
@@ -160,42 +113,44 @@ class _CordStretchState extends State<MultiTween>
   void initState() {
     startPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2);
     endPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
+
     animationController =
         AnimationController(vsync: this, duration: Duration(seconds: 2));
 
-    animation = sizeAnimation.animate(animationController)
+    upperCurveAnimation = upperCurveTween.animate(animationController)
       ..addListener(() {
         setState(() {});
       });
 
-    animation2 = sizeAnimation2.animate(animationController)
+    lowerCurveAnimation = lowerCurveTween.animate(animationController)
       ..addListener(() {
         setState(() {});
       });
 
-    animation3 = sizeAnimation3.animate(animationController)
-      ..addListener(() {
-        setState(() {});
-      });
+    lowerCurveCompressAnimation =
+        lowerCurveCompressTween.animate(animationController)
+          ..addListener(() {
+            setState(() {});
+          });
 
     animationController.addListener(() {
       double currentDuration =
           double.parse(animationController.value.toStringAsFixed(1));
 
-      print('size animation val is ${animation.value}');
+      print('size upperCurveAnimation val is ${upperCurveAnimation.value}');
       // print(currentDuration);
     });
 
     animationController.addStatusListener((status) {
       if (animationController.status == AnimationStatus.completed) {
-      } else if (animationController.status == AnimationStatus.dismissed) {
         setState(() {
-          // show = false;
-          // showMain = true;
+          showCord = true;
+          showAnimation = false;
         });
-      }
+        animationController.reset();
+      } else if (animationController.status == AnimationStatus.dismissed) {}
     });
-    animationController.forward();
+    //animationController.forward();
     super.initState();
   }
 
@@ -213,7 +168,7 @@ class _CordStretchState extends State<MultiTween>
           //     : IgnorePointer(),
           // show == true
           //     ? CustomPaint(
-          //         painter: CurveRight1(animationRight1.value, animationRight2.value),
+          //         painter: AnimatedCordPainter(animationRight1.value, animationRight2.value),
           //         child: SizedBox(),
           //       )
           //     : IgnorePointer(),
@@ -222,16 +177,41 @@ class _CordStretchState extends State<MultiTween>
             width: widget.mediaWidth,
             color: Colors.orange,
           ),
-          CustomPaint(
-            painter: CurveRight1(startPosition, animation.value,
-                animation2.value, animation3.value),
-            child: SizedBox(),
-          ),
+          showAnimation == true
+              ? CustomPaint(
+                  painter: AnimatedCordPainter(
+                      startPosition,
+                      upperCurveAnimation.value,
+                      lowerCurveAnimation.value,
+                      lowerCurveCompressAnimation.value),
+                  child: SizedBox(),
+                )
+              : IgnorePointer(),
 
-          CustomPaint(
-            painter: LinePainter(startPosition, endPosition),
-            child: Container(),
-          ),
+          showCord == true
+              ? GestureDetector(
+                  onPanDown: (details) {},
+                  onPanUpdate: (details) {
+                    setState(() {
+                      endPosition = Offset(
+                          details.globalPosition.dx, details.globalPosition.dy);
+                    });
+                  },
+                  onPanEnd: (details) {
+                    setState(() {
+                      endPosition = Offset(
+                          widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
+                      showAnimation = true;
+                      showCord = false;
+                    });
+                    animationController.forward();
+                  },
+                  child: CustomPaint(
+                    painter: CordPainter(startPosition, endPosition),
+                    child: Container(),
+                  ),
+                )
+              : IgnorePointer(),
 
           Positioned(
               top: widget.mediaHeight / 2 - 30,

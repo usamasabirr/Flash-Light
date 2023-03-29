@@ -1,4 +1,5 @@
 import 'package:flash_light/custom_line.dart';
+import 'package:flash_light/development/development.dart';
 import 'package:flash_light/dragable_example.dart';
 import 'package:flash_light/flutter_sample.dart';
 import 'package:flash_light/lamp.dart';
@@ -45,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var mediaWidth = MediaQuery.of(context).size.width;
     return Scaffold(
         body: SafeArea(
-      child: MultiTween(mediaWidth: mediaWidth, mediaHeight: mediaHeight),
+      child: Development(mediaWidth: mediaWidth, mediaHeight: mediaHeight),
     ));
   }
 }
