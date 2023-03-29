@@ -186,7 +186,7 @@ class _ChangeState extends State<Change> with SingleTickerProviderStateMixin {
     endPosition = Offset(x2, y2);
 
     _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
 
     _curve1Animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
       parent: _controller,

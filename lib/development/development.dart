@@ -2,24 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+class ColorOff {
+  static final greyColor = Color(0xff29363D);
+  static final lightGreyColor = Color(0xff999999);
+}
+
 class ColorOn {
-  final greyColor = Color(0xff29363D);
+  static final yellowColor = Color(0xffF0D8A8);
+  static final blackColor = Colors.black;
 }
 
 class CordPainter extends CustomPainter {
   Offset startPosition;
   Offset endPosition;
-  CordPainter(this.startPosition, this.endPosition);
+  bool isOff;
+  CordPainter(this.startPosition, this.endPosition, this.isOff);
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.grey
+      ..color = isOff == true ? ColorOff.lightGreyColor : ColorOn.blackColor
       ..strokeWidth = 4;
 
-    Offset startingPoint = startPosition;
-    Offset endingPoint = endPosition;
-
-    canvas.drawLine(startingPoint, endingPoint, paint);
+    canvas.drawLine(startPosition, endPosition, paint);
     canvas.drawCircle(Offset(endPosition.dx, endPosition.dy), 4, paint);
   }
 
@@ -77,12 +81,15 @@ class _CordStretchState extends State<Development>
   late Offset endPosition;
 
   late AnimationController animationController;
+  late Animation cordAnimation;
   late Animation upperCurveAnimation;
   late Animation lowerCurveAnimation;
   late Animation lowerCurveCompressAnimation;
 
   bool showAnimation = false;
   bool showCord = true;
+
+  bool isOff = true;
 
   late var upperCurveTween = TweenSequence(<TweenSequenceItem<double>>[
     TweenSequenceItem(tween: Tween(begin: 0.0, end: 45.0), weight: 20),
@@ -115,39 +122,53 @@ class _CordStretchState extends State<Development>
     endPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
 
     animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 2));
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
 
-    upperCurveAnimation = upperCurveTween.animate(animationController)
+    upperCurveAnimation = upperCurveTween.animate(CurvedAnimation(
+        parent: animationController, curve: Interval(0.18, 1.0)))
       ..addListener(() {
         setState(() {});
       });
 
-    lowerCurveAnimation = lowerCurveTween.animate(animationController)
+    lowerCurveAnimation = lowerCurveTween.animate(CurvedAnimation(
+        parent: animationController, curve: Interval(0.18, 1.0)))
       ..addListener(() {
         setState(() {});
       });
 
-    lowerCurveCompressAnimation =
-        lowerCurveCompressTween.animate(animationController)
-          ..addListener(() {
-            setState(() {});
-          });
+    lowerCurveCompressAnimation = lowerCurveCompressTween.animate(
+        CurvedAnimation(
+            parent: animationController, curve: Interval(0.18, 1.0)))
+      ..addListener(() {
+        setState(() {});
+      });
 
     animationController.addListener(() {
       double currentDuration =
           double.parse(animationController.value.toStringAsFixed(1));
 
-      print('size upperCurveAnimation val is ${upperCurveAnimation.value}');
+      if (currentDuration == 0.2) {
+        setState(() {
+          isOff = false;
+          showAnimation = true;
+          showCord = false;
+        });
+      }
+
+      //print('size upperCurveAnimation val is ${upperCurveAnimation.value}');
       // print(currentDuration);
     });
 
     animationController.addStatusListener((status) {
       if (animationController.status == AnimationStatus.completed) {
+        animationController.reset();
         setState(() {
+          //isOff = !isOff;
           showCord = true;
           showAnimation = false;
+          endPosition =
+              Offset(widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
         });
-        animationController.reset();
       } else if (animationController.status == AnimationStatus.dismissed) {}
     });
     //animationController.forward();
@@ -175,7 +196,7 @@ class _CordStretchState extends State<Development>
           Container(
             height: widget.mediaHeight,
             width: widget.mediaWidth,
-            color: Colors.orange,
+            color: isOff == true ? ColorOff.greyColor : ColorOn.yellowColor,
           ),
           showAnimation == true
               ? CustomPaint(
@@ -199,15 +220,30 @@ class _CordStretchState extends State<Development>
                   },
                   onPanEnd: (details) {
                     setState(() {
-                      endPosition = Offset(
-                          widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
-                      showAnimation = true;
-                      showCord = false;
+                      // endPosition = Offset(
+                      //     widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
+                      //showAnimation = true;
+                      //showCord = false;
                     });
+                    cordAnimation = Tween<Offset>(
+                            begin: endPosition,
+                            end: Offset(widget.mediaWidth / 2,
+                                widget.mediaHeight / 2 + 100))
+                        .animate(
+                      CurvedAnimation(
+                        parent: animationController,
+                        curve: Interval(0, 0.2, curve: Curves.linear),
+                      ),
+                    )..addListener(() {
+                        setState(() {
+                          endPosition = cordAnimation.value;
+                        });
+                      });
+
                     animationController.forward();
                   },
                   child: CustomPaint(
-                    painter: CordPainter(startPosition, endPosition),
+                    painter: CordPainter(startPosition, endPosition, isOff),
                     child: Container(),
                   ),
                 )
