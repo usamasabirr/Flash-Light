@@ -59,9 +59,17 @@ class CurveRight1 extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final path = Path();
     path.moveTo(100, 100);
-    path.quadraticBezierTo(100 + curve, 100, 100, 140);
-    path.moveTo(100, 140);
-    path.quadraticBezierTo(100 + height, 140, 100, 180 + height2);
+    path.quadraticBezierTo(100 + curve, 120, 100, 140);
+    //path.quadraticBezierTo(100, 145, 100, 140);
+    path.quadraticBezierTo(100 + height, 160, 100, 180 + height2);
+
+    // Path path = Path()
+    //   ..moveTo(50, 100)
+    //   ..quadraticBezierTo(75, 125, 50, 150) // first quadratic Bezier curve
+    //   ..quadraticBezierTo(25, 175, 50, 200); // second quadratic Bezier curve
+    // // ..lineTo(250, 150) // connect the two curves with a straight line
+    // // ..lineTo(50, 150) // close the path
+    // //..close();
 
     final Paint paint = Paint();
     paint.color = Colors.grey;
@@ -112,18 +120,21 @@ class _CordStretchState extends State<MultiTween>
   late Animation animation;
   late Animation animation2;
   late Animation animation3;
-  var sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
-    TweenSequenceItem(tween: Tween(begin: 0.0, end: 100.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: 100.0, end: -100.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: -100.0, end: 50.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: 50.0, end: -50), weight: 20),
+
+  final angleStart = 0.0;
+  double angleEnd = 50;
+  late var sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
+    TweenSequenceItem(tween: Tween(begin: 0.0, end: 50.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: 50.0, end: -50.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: -50.0, end: 25.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: 25.0, end: -25), weight: 20),
   ]);
 
   var sizeAnimation2 = TweenSequence(<TweenSequenceItem<double>>[
-    TweenSequenceItem(tween: Tween(begin: 0.0, end: -100.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: -100.0, end: 100.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: 100.0, end: -50.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: -50.0, end: 50), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: 0.0, end: -50.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: -50.0, end: 50.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: 50.0, end: -25.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: -25.0, end: 25), weight: 20),
   ]);
 
   var sizeAnimation3 = TweenSequence(<TweenSequenceItem<double>>[
@@ -133,12 +144,14 @@ class _CordStretchState extends State<MultiTween>
     TweenSequenceItem(tween: Tween(begin: -10, end: 0), weight: 20),
   ]);
 
+  initializeTween() {}
+
   @override
   void initState() {
     startPosition = Offset(x1, y1);
     endPosition = Offset(x2, y2);
     animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 2));
+        AnimationController(vsync: this, duration: Duration(seconds: 4));
 
     animation = sizeAnimation.animate(animationController)
       ..addListener(() {
@@ -211,7 +224,14 @@ class _CordStretchState extends State<MultiTween>
           //         child: SizedBox(),
           //       )
           //     : IgnorePointer(),
-
+          // Positioned(
+          //     top: 300,
+          //     left: 200,
+          //     child: Container(
+          //       height: 20,
+          //       width: 20,
+          //       color: Colors.black,
+          //     )),
           CustomPaint(
             painter: CurveRight1(
                 animation.value, animation2.value, animation3.value),
