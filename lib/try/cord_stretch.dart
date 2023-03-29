@@ -22,17 +22,17 @@ class LinePainter extends CustomPainter {
   bool shouldRepaint(LinePainter oldDelegate) => true;
 }
 
-class Curve1 extends CustomPainter {
+class CurveLeft1 extends CustomPainter {
   double curve;
   double height;
-  Curve1(this.curve, this.height);
+  CurveLeft1(this.curve, this.height);
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path();
     path.moveTo(100, 100);
-    path.quadraticBezierTo(100 + curve, 100, 100, 140);
+    path.quadraticBezierTo(100 - curve, 100, 100, 140);
     path.moveTo(100, 140);
-    path.quadraticBezierTo(100 - curve, 140, 100, 180 - height);
+    path.quadraticBezierTo(100 + curve, 140, 100, 180 - height);
 
     final Paint paint = Paint();
     paint.color = Colors.grey;
@@ -45,15 +45,15 @@ class Curve1 extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(Curve1 oldDelegate) {
+  bool shouldRepaint(CurveLeft1 oldDelegate) {
     return true;
   }
 }
 
-class Curve2 extends CustomPainter {
+class CurveRight1 extends CustomPainter {
   double curve;
   double height;
-  Curve2(this.curve, this.height);
+  CurveRight1(this.curve, this.height);
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path();
@@ -73,7 +73,7 @@ class Curve2 extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(Curve2 oldDelegate) {
+  bool shouldRepaint(CurveRight1 oldDelegate) {
     return true;
   }
 }
@@ -96,8 +96,11 @@ class _CordStretchState extends State<CordStretch>
   late Offset startPosition;
   late Offset endPosition;
   late AnimationController animationController;
-  late Animation animation1;
-  late Animation animation2;
+  late Animation animationLeft1;
+  late Animation animationLeft2;
+
+  late Animation animationRight1;
+  late Animation animationRight2;
 
   bool show = false;
 
@@ -108,8 +111,32 @@ class _CordStretchState extends State<CordStretch>
     startPosition = Offset(x1, y1);
     endPosition = Offset(x2, y2);
     animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
-    animation1 = Tween(begin: 1.0, end: 50.0).animate(CurvedAnimation(
+        AnimationController(vsync: this, duration: Duration(seconds: 5));
+    animationLeft1 = Tween(begin: 1.0, end: 50.0).animate(CurvedAnimation(
+        parent: animationController,
+        curve: Interval(
+          0.5,
+          1,
+        )))
+      ..addListener(() {
+        if (animationLeft1.isCompleted) {
+          print('done');
+        }
+
+        setState(() {});
+      });
+    animationLeft2 = Tween(begin: 1.0, end: 20.0).animate(CurvedAnimation(
+        parent: animationController,
+        curve: Interval(
+          0.5,
+          1,
+        )))
+      ..addListener(() {
+        if (animationController.status == AnimationStatus.completed) {}
+        setState(() {});
+      });
+
+    animationRight1 = Tween(begin: 1.0, end: 50.0).animate(CurvedAnimation(
         parent: animationController,
         curve: Interval(
           0.0,
@@ -119,7 +146,7 @@ class _CordStretchState extends State<CordStretch>
         if (animationController.status == AnimationStatus.completed) {}
         setState(() {});
       });
-    animation2 = Tween(begin: 1.0, end: 20.0).animate(CurvedAnimation(
+    animationRight2 = Tween(begin: 1.0, end: 20.0).animate(CurvedAnimation(
         parent: animationController,
         curve: Interval(
           0.0,
@@ -132,7 +159,7 @@ class _CordStretchState extends State<CordStretch>
 
     animationController.addStatusListener((status) {
       if (animationController.status == AnimationStatus.completed) {
-        animationController.reverse();
+        //  animationController.reverse();
       } else if (animationController.status == AnimationStatus.dismissed) {
         setState(() {
           show = false;
@@ -150,13 +177,20 @@ class _CordStretchState extends State<CordStretch>
       children: [
         show == true
             ? CustomPaint(
-                painter: Curve1(animation1.value, animation2.value),
+                painter: CurveLeft1(animationLeft1.value, animationLeft2.value),
                 child: SizedBox(),
               )
             : IgnorePointer(),
+        // show == true
+        //     ? CustomPaint(
+        //         painter: CurveRight1(animationRight1.value, animationRight2.value),
+        //         child: SizedBox(),
+        //       )
+        //     : IgnorePointer(),
         show == true
             ? CustomPaint(
-                painter: Curve2(animation1.value, animation2.value),
+                painter:
+                    CurveRight1(animationRight1.value, animationRight2.value),
                 child: SizedBox(),
               )
             : IgnorePointer(),
