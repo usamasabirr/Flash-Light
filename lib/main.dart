@@ -4,6 +4,7 @@ import 'package:flash_light/flutter_sample.dart';
 import 'package:flash_light/lamp.dart';
 import 'package:flash_light/try/animate_path_try.dart';
 import 'package:flash_light/try/cord_stretch.dart';
+import 'package:flash_light/try/multi_tween.dart';
 import 'package:flash_light/try/spring_package.dart';
 import 'package:flash_light/try/spring_simulation.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CordStretch(),
+      home: MultiTween(),
     );
   }
 }

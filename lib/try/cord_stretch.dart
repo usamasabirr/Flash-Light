@@ -99,6 +99,12 @@ class _CordStretchState extends State<CordStretch>
   late Animation animationLeft1;
   late Animation animationLeft2;
 
+  double rightTween1Begin = 1.0;
+  double rightTween1End = 50.0;
+
+  double rightTween2Begin = 1.0;
+  double rightTween2End = 20.0;
+
   late Animation animationRight1;
   late Animation animationRight2;
 
@@ -111,54 +117,87 @@ class _CordStretchState extends State<CordStretch>
     startPosition = Offset(x1, y1);
     endPosition = Offset(x2, y2);
     animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 5));
-    animationLeft1 = Tween(begin: 1.0, end: 50.0).animate(CurvedAnimation(
-        parent: animationController,
-        curve: Interval(
-          0.5,
-          1,
-        )))
-      ..addListener(() {
-        if (animationLeft1.isCompleted) {
-          print('done');
-        }
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+    // animationLeft1 = Tween(begin: 1.0, end: 50.0).animate(CurvedAnimation(
+    //     parent: animationController,
+    //     curve: Interval(
+    //       0.5,
+    //       1,
+    //     )))
+    //   ..addListener(() {
+    //     if (animationLeft1.isCompleted) {
+    //       print('done');
+    //     }
 
+    //     setState(() {});
+    //   });
+    // animationLeft2 = Tween(begin: 1.0, end: 20.0).animate(CurvedAnimation(
+    //     parent: animationController,
+    //     curve: Interval(
+    //       0.5,
+    //       0.7,
+    //     )))
+    //   ..addListener(() {
+    //     if (animationController.value > 0.7 &&
+    //         animationController.value < 0.75) {
+    //       setState(() {
+    //         double temp = rightTween1Begin;
+    //         rightTween1Begin = rightTween1End;
+    //         rightTween1End = temp;
+    //       });
+    //     }
+    //     if (animationController.status == AnimationStatus.completed) {}
+    //     setState(() {});
+    //   });
+
+    animationRight1 = Tween(begin: rightTween1Begin, end: rightTween1End)
+        .animate(CurvedAnimation(
+            parent: animationController,
+            curve: Interval(
+              0.0,
+              1,
+            )))
+      ..addListener(() {
+        if (animationController.status == AnimationStatus.completed) {}
         setState(() {});
       });
-    animationLeft2 = Tween(begin: 1.0, end: 20.0).animate(CurvedAnimation(
-        parent: animationController,
-        curve: Interval(
-          0.5,
-          1,
-        )))
+    animationRight2 = Tween(begin: rightTween2Begin, end: rightTween2End)
+        .animate(CurvedAnimation(
+            parent: animationController,
+            curve: Interval(
+              0.0,
+              1,
+            )))
       ..addListener(() {
         if (animationController.status == AnimationStatus.completed) {}
         setState(() {});
       });
 
-    animationRight1 = Tween(begin: 1.0, end: 50.0).animate(CurvedAnimation(
-        parent: animationController,
-        curve: Interval(
-          0.0,
-          0.5,
-        )))
-      ..addListener(() {
-        if (animationController.status == AnimationStatus.completed) {}
-        setState(() {});
-      });
-    animationRight2 = Tween(begin: 1.0, end: 20.0).animate(CurvedAnimation(
-        parent: animationController,
-        curve: Interval(
-          0.0,
-          0.5,
-        )))
-      ..addListener(() {
-        if (animationController.status == AnimationStatus.completed) {}
-        setState(() {});
-      });
+    animationController.addListener(() {
+      double currentDuration =
+          double.parse(animationController.value.toStringAsFixed(1));
+      // if (currentDuration == 0.6) {
+      //   print('inside');
+      //   setState(() {
+      //     var temp = rightTween1Begin;
+      //     rightTween1Begin = rightTween1End;
+      //     //animationController.reset();
+      //     rightTween1End = temp;
+      //     //animationController.forward();
+      //   });
+      // }
+    });
 
     animationController.addStatusListener((status) {
       if (animationController.status == AnimationStatus.completed) {
+        print('Done');
+        setState(() {
+          var temp = rightTween1Begin;
+          rightTween1Begin = 70;
+          //animationController.reset();
+          rightTween1End = 30;
+          animationController.forward();
+        });
         //  animationController.reverse();
       } else if (animationController.status == AnimationStatus.dismissed) {
         setState(() {
@@ -175,12 +214,12 @@ class _CordStretchState extends State<CordStretch>
     return Scaffold(
         body: Stack(
       children: [
-        show == true
-            ? CustomPaint(
-                painter: CurveLeft1(animationLeft1.value, animationLeft2.value),
-                child: SizedBox(),
-              )
-            : IgnorePointer(),
+        // show == true
+        //     ? CustomPaint(
+        //         painter: CurveLeft1(animationLeft1.value, animationLeft2.value),
+        //         child: SizedBox(),
+        //       )
+        //     : IgnorePointer(),
         // show == true
         //     ? CustomPaint(
         //         painter: CurveRight1(animationRight1.value, animationRight2.value),
