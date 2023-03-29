@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+class ColorOn {
+  final greyColor = Color(0xff29363D);
+}
+
 class LinePainter extends CustomPainter {
   Offset startPosition;
   Offset endPosition;
@@ -51,17 +55,27 @@ class LinePainter extends CustomPainter {
 // }
 
 class CurveRight1 extends CustomPainter {
+  Offset startPosition;
   double curve;
   double height;
   double height2;
-  CurveRight1(this.curve, this.height, this.height2);
+  CurveRight1(this.startPosition, this.curve, this.height, this.height2);
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path();
-    path.moveTo(100, 100);
-    path.quadraticBezierTo(100 + curve, 120, 100, 140);
+    final Paint paint = Paint();
+    paint.color = Colors.black;
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = 4.0;
+    paint.strokeCap = StrokeCap.round;
+    path.moveTo(startPosition.dx, startPosition.dy);
+    path.quadraticBezierTo(startPosition.dx + curve, startPosition.dy + 20,
+        startPosition.dx, startPosition.dy + 40);
     //path.quadraticBezierTo(100, 145, 100, 140);
-    path.quadraticBezierTo(100 + height, 160, 100, 180 + height2);
+    path.quadraticBezierTo(startPosition.dx + height, startPosition.dy + 60,
+        startPosition.dx, startPosition.dy + 100 + height2);
+    canvas.drawCircle(
+        Offset(startPosition.dx, startPosition.dy + 100 + height2), 2, paint);
 
     // Path path = Path()
     //   ..moveTo(50, 100)
@@ -70,12 +84,6 @@ class CurveRight1 extends CustomPainter {
     // // ..lineTo(250, 150) // connect the two curves with a straight line
     // // ..lineTo(50, 150) // close the path
     // //..close();
-
-    final Paint paint = Paint();
-    paint.color = Colors.grey;
-    paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = 4.0;
-    paint.strokeCap = StrokeCap.round;
 
     canvas.drawPath(path, paint);
     // Add path points here based on your needs
@@ -88,7 +96,9 @@ class CurveRight1 extends CustomPainter {
 }
 
 class MultiTween extends StatefulWidget {
-  MultiTween({super.key});
+  double mediaWidth;
+  double mediaHeight;
+  MultiTween({super.key, required this.mediaWidth, required this.mediaHeight});
 
   @override
   State<MultiTween> createState() => _CordStretchState();
@@ -96,10 +106,6 @@ class MultiTween extends StatefulWidget {
 
 class _CordStretchState extends State<MultiTween>
     with SingleTickerProviderStateMixin {
-  final double x1 = 100.0;
-  final double y1 = 100.0;
-  final double x2 = 100.0;
-  final double y2 = 180.0;
   double start1 = 1.0;
   // double start2 =
   late Offset startPosition;
@@ -123,11 +129,13 @@ class _CordStretchState extends State<MultiTween>
 
   final angleStart = 0.0;
   double angleEnd = 50;
+
   late var sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
-    TweenSequenceItem(tween: Tween(begin: 0.0, end: 50.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: 50.0, end: -50.0), weight: 20),
-    TweenSequenceItem(tween: Tween(begin: -50.0, end: 25.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: 0.0, end: 45.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: 45.0, end: -45.0), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: -45.0, end: 25.0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: 25.0, end: -25), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: -25.0, end: 0), weight: 20),
   ]);
 
   var sizeAnimation2 = TweenSequence(<TweenSequenceItem<double>>[
@@ -135,6 +143,7 @@ class _CordStretchState extends State<MultiTween>
     TweenSequenceItem(tween: Tween(begin: -50.0, end: 50.0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: 50.0, end: -25.0), weight: 20),
     TweenSequenceItem(tween: Tween(begin: -25.0, end: 25), weight: 20),
+    TweenSequenceItem(tween: Tween(begin: 25.0, end: 0), weight: 20),
   ]);
 
   var sizeAnimation3 = TweenSequence(<TweenSequenceItem<double>>[
@@ -148,10 +157,10 @@ class _CordStretchState extends State<MultiTween>
 
   @override
   void initState() {
-    startPosition = Offset(x1, y1);
-    endPosition = Offset(x2, y2);
+    startPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2);
+    endPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2 + 80);
     animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 4));
+        AnimationController(vsync: this, duration: Duration(seconds: 2));
 
     animation = sizeAnimation.animate(animationController)
       ..addListener(() {
@@ -224,60 +233,32 @@ class _CordStretchState extends State<MultiTween>
           //         child: SizedBox(),
           //       )
           //     : IgnorePointer(),
-          // Positioned(
-          //     top: 300,
-          //     left: 200,
-          //     child: Container(
-          //       height: 20,
-          //       width: 20,
-          //       color: Colors.black,
-          //     )),
+          Container(
+            height: widget.mediaHeight,
+            width: widget.mediaWidth,
+            color: Colors.orange,
+          ),
           CustomPaint(
-            painter: CurveRight1(
-                animation.value, animation2.value, animation3.value),
+            painter: CurveRight1(startPosition, animation.value,
+                animation2.value, animation3.value),
             child: SizedBox(),
-          )
+          ),
 
-          // showMain == true
-          //     ? GestureDetector(
-          //         onPanDown: (details) {
-          //           // setState(() {
-          //           //   show = false;
-          //           // });
-          //           print('clicked');
-          //         },
-          //         onPanUpdate: (details) {
-          //           print('clicked');
-          //           setState(() {
-          //             endPosition = Offset(
-          //                 details.globalPosition.dx, details.globalPosition.dy);
-          //           });
-          //         },
-          //         onPanEnd: (details) {
-          //           setState(() {
-          //             show = true;
-          //             showMain = false;
-          //             endPosition = Offset(100, 180);
-          //           });
-          //           animationController.forward();
-          //         },
-          //         child: CustomPaint(
-          //           painter: LinePainter(startPosition, endPosition),
-          //           child: Container(),
-          //         ),
-          //       )
-          //     : IgnorePointer(),
-
-          // ElevatedButton(
-          //     onPressed: () {
-          //       if (animationController.status == AnimationStatus.completed) {
-          //         animationController.reverse();
-          //       } else if (animationController.status ==
-          //           AnimationStatus.dismissed) {
-          //         animationController.forward();
-          //       }
-          //     },
-          //     child: Text('Press me'))
+          Positioned(
+              top: widget.mediaHeight / 2 - 30,
+              left: widget.mediaWidth / 2 - 10,
+              child: Container(
+                height: 35,
+                width: 25,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 2),
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.elliptical(20, 10),
+                        topRight: Radius.elliptical(20, 10),
+                        bottomLeft: Radius.elliptical(20, 10),
+                        bottomRight: Radius.elliptical(20, 10))),
+              )),
         ],
       ),
     ));

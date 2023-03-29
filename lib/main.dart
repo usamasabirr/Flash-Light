@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MultiTween(),
+      home: MyHomePage(),
     );
   }
 }
@@ -41,9 +41,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    var mediaHeight = MediaQuery.of(context).size.height;
+    var mediaWidth = MediaQuery.of(context).size.width;
     return Scaffold(
         body: SafeArea(
-      child: Change(),
+      child: MultiTween(mediaWidth: mediaWidth, mediaHeight: mediaHeight),
     ));
   }
 }
