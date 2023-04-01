@@ -3,7 +3,9 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 class ColorOff {
+  static final extraLightGreyColor = Color(0xffD9D9D9);
   static final greyColor = Color(0xff29363D);
+  static final mediumGreyColor = Color(0xff666666);
   static final lightGreyColor = Color(0xff999999);
 }
 
@@ -29,6 +31,64 @@ class CordPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CordPainter oldDelegate) => true;
+}
+
+class BulbBottomCurvePainter extends CustomPainter {
+  Offset startPosition;
+  Offset endPosition;
+  bool isOff;
+  BulbBottomCurvePainter(this.startPosition, this.endPosition, this.isOff);
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = ColorOff.lightGreyColor
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3;
+
+    Path path = Path();
+    path.moveTo(startPosition.dx - 13, startPosition.dy - 33);
+    path.quadraticBezierTo(startPosition.dx + 2, startPosition.dy - 18,
+        startPosition.dx + 15, startPosition.dy - 33);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(BulbBottomCurvePainter oldDelegate) => true;
+}
+
+class BulbPainter extends CustomPainter {
+  Offset startPosition;
+  Offset endPosition;
+  bool isOff;
+  BulbPainter(this.startPosition, this.endPosition, this.isOff);
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3;
+
+    var path = Path();
+    path.addArc(
+        Rect.fromCenter(
+            center: Offset(size.width / 2, size.height / 2 - 80),
+            width: 70,
+            height: 70),
+        2.35619,
+        4.77);
+    path.lineTo(size.width / 2 + 10, size.height / 2 - 20);
+    path.quadraticBezierTo(size.width / 2, size.height / 2 - 12,
+        size.width / 2 - 10, size.height / 2 - 20);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(BulbPainter oldDelegate) => true;
 }
 
 class AnimatedCordPainter extends CustomPainter {
@@ -181,18 +241,6 @@ class _CordStretchState extends State<Development>
         body: SafeArea(
       child: Stack(
         children: [
-          // show == true
-          //     ? CustomPaint(
-          //         painter: CurveLeft1(animationLeft1.value, animationLeft2.value),
-          //         child: SizedBox(),
-          //       )
-          //     : IgnorePointer(),
-          // show == true
-          //     ? CustomPaint(
-          //         painter: AnimatedCordPainter(animationRight1.value, animationRight2.value),
-          //         child: SizedBox(),
-          //       )
-          //     : IgnorePointer(),
           Container(
             height: widget.mediaHeight,
             width: widget.mediaWidth,
@@ -208,6 +256,11 @@ class _CordStretchState extends State<Development>
                   child: SizedBox(),
                 )
               : IgnorePointer(),
+
+          //bulb root
+          CustomPaint(
+              child: Container(),
+              painter: BulbPainter(startPosition, endPosition, isOff)),
 
           showCord == true
               ? GestureDetector(
@@ -248,22 +301,6 @@ class _CordStretchState extends State<Development>
                   ),
                 )
               : IgnorePointer(),
-
-          Positioned(
-              top: widget.mediaHeight / 2 - 30,
-              left: widget.mediaWidth / 2 - 10,
-              child: Container(
-                height: 35,
-                width: 25,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2),
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.elliptical(20, 10),
-                        topRight: Radius.elliptical(20, 10),
-                        bottomLeft: Radius.elliptical(20, 10),
-                        bottomRight: Radius.elliptical(20, 10))),
-              )),
         ],
       ),
     ));
