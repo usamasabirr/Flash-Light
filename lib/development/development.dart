@@ -7,6 +7,7 @@ class ColorOff {
   static final greyColor = Color(0xff29363D);
   static final mediumGreyColor = Color(0xff666666);
   static final lightGreyColor = Color(0xff999999);
+  static final green = Color(0xff364950);
 }
 
 class ColorOn {
@@ -46,12 +47,23 @@ class BulbBottomCurvePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 3;
 
+    Paint paint2 = Paint()
+      ..color = ColorOff.mediumGreyColor
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3;
+
     Path path = Path();
-    path.moveTo(startPosition.dx - 13, startPosition.dy - 33);
-    path.quadraticBezierTo(startPosition.dx + 2, startPosition.dy - 18,
-        startPosition.dx + 15, startPosition.dy - 33);
+    path.moveTo(startPosition.dx - 15, startPosition.dy - 10);
+    path.quadraticBezierTo(startPosition.dx, startPosition.dy + 15,
+        startPosition.dx + 15, startPosition.dy - 10);
+    path.lineTo(startPosition.dx + 15, startPosition.dy - 40);
+    path.quadraticBezierTo(startPosition.dx, startPosition.dy - 55,
+        startPosition.dx - 15, startPosition.dy - 40);
+    path.close();
 
     canvas.drawPath(path, paint);
+    canvas.drawPath(path, paint2);
   }
 
   @override
@@ -66,10 +78,10 @@ class BulbPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.black
+      ..color = ColorOff.lightGreyColor
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 3;
+      ..strokeWidth = 2;
 
     var path = Path();
     path.addArc(
@@ -256,11 +268,15 @@ class _CordStretchState extends State<Development>
                   child: SizedBox(),
                 )
               : IgnorePointer(),
-
           //bulb root
           CustomPaint(
               child: Container(),
               painter: BulbPainter(startPosition, endPosition, isOff)),
+          //bulb bottom cord
+          CustomPaint(
+              child: Container(),
+              painter:
+                  BulbBottomCurvePainter(startPosition, endPosition, isOff)),
 
           showCord == true
               ? GestureDetector(
