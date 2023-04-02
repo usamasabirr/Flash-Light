@@ -1,17 +1,10 @@
-import 'package:flash_light/custom_line.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flash_light/development/development.dart';
-import 'package:flash_light/dragable_example.dart';
-import 'package:flash_light/flutter_sample.dart';
-import 'package:flash_light/lamp.dart';
-import 'package:flash_light/try/animate_path_try.dart';
-import 'package:flash_light/try/cord_stretch.dart';
-import 'package:flash_light/try/multi_tween.dart';
-import 'package:flash_light/try/spring_package.dart';
-import 'package:flash_light/try/spring_simulation.dart';
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(DevicePreview(enabled: false, builder: (context) => MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,9 +37,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var mediaHeight = MediaQuery.of(context).size.height;
     var mediaWidth = MediaQuery.of(context).size.width;
+    var topPadding = MediaQuery.of(context).padding.top;
+    var bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    var height = mediaHeight - topPadding - bottomPadding;
+
     return Scaffold(
         body: SafeArea(
-      child: Development(mediaWidth: mediaWidth, mediaHeight: mediaHeight),
+      child: Development(mediaWidth: mediaWidth, mediaHeight: height),
     ));
   }
 }

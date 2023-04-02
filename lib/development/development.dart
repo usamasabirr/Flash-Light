@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -190,14 +191,15 @@ class AnimatedCordPainter extends CustomPainter {
   double curve;
   double height;
   double height2;
+  bool isOff;
   AnimatedCordPainter(
-      this.startPosition, this.curve, this.height, this.height2);
+      this.startPosition, this.curve, this.height, this.height2, this.isOff);
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path();
 
     final Paint paint = Paint();
-    paint.color = Colors.black;
+    paint.color = isOff == true ? ColorOff.lightGreyColor : Colors.black;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 4.0;
     paint.strokeCap = StrokeCap.round;
@@ -244,6 +246,8 @@ class _CordStretchState extends State<Development>
   bool showCord = true;
 
   bool isOff = true;
+
+  final player = AudioPlayer();
 
   late var upperCurveTween = TweenSequence(<TweenSequenceItem<double>>[
     TweenSequenceItem(tween: Tween(begin: 0.0, end: 45.0), weight: 20),
@@ -298,25 +302,24 @@ class _CordStretchState extends State<Development>
       });
 
     animationController.addListener(() {
+      print('value is ${animationController.value}');
       double currentDuration =
-          double.parse(animationController.value.toStringAsFixed(1));
+          double.parse(animationController.value.toStringAsFixed(2));
 
       if (currentDuration == 0.2) {
         setState(() {
-          isOff = false;
+          // isOff = !isOff;
           showAnimation = true;
           showCord = false;
         });
       }
-
-      //print('size upperCurveAnimation val is ${upperCurveAnimation.value}');
-      // print(currentDuration);
     });
 
     animationController.addStatusListener((status) {
       if (animationController.status == AnimationStatus.completed) {
         animationController.reset();
         setState(() {
+          //isOff = !isOff;
           //isOff = !isOff;
           showCord = true;
           showAnimation = false;
@@ -346,7 +349,8 @@ class _CordStretchState extends State<Development>
                       startPosition,
                       upperCurveAnimation.value,
                       lowerCurveAnimation.value,
-                      lowerCurveCompressAnimation.value),
+                      lowerCurveCompressAnimation.value,
+                      isOff),
                   child: SizedBox(),
                 )
               : IgnorePointer(),
@@ -380,12 +384,10 @@ class _CordStretchState extends State<Development>
                           details.globalPosition.dx, details.globalPosition.dy);
                     });
                   },
-                  onPanEnd: (details) {
+                  onPanEnd: (details) async {
+                    await player.play(AssetSource('audio/switch.mp3'));
                     setState(() {
-                      // endPosition = Offset(
-                      //     widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
-                      //showAnimation = true;
-                      //showCord = false;
+                      isOff = !isOff;
                     });
                     cordAnimation = Tween<Offset>(
                             begin: endPosition,

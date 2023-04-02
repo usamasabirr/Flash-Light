@@ -38,6 +38,8 @@ dependencies:
   drawing_animation: ^1.0.1
   animated_path: ^0.0.2
   spring: ^2.0.2
+  device_preview: ^1.1.0
+  audioplayers: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -62,7 +64,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/audio/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
