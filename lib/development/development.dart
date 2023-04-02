@@ -8,11 +8,15 @@ class ColorOff {
   static final mediumGreyColor = Color(0xff666666);
   static final lightGreyColor = Color(0xff999999);
   static final green = Color(0xff364950);
+  static final ovalColor = Color(0xff6C7474);
 }
 
 class ColorOn {
   static final yellowColor = Color(0xffF0D8A8);
   static final blackColor = Colors.black;
+  static final lineColor = Color(0xffE2E7A6);
+  static final bulbColor = Color(0xffE2E7A6);
+  static final ovalColor = Color(0xfff0d8a8);
 }
 
 class CordPainter extends CustomPainter {
@@ -42,13 +46,14 @@ class BulbBottomCurvePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = ColorOff.lightGreyColor
+      ..color = isOff == true ? ColorOff.lightGreyColor : ColorOn.blackColor
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 3;
 
     Paint paint2 = Paint()
-      ..color = ColorOff.mediumGreyColor
+      ..color =
+          isOff == true ? ColorOff.mediumGreyColor : ColorOff.lightGreyColor
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 3;
@@ -70,6 +75,76 @@ class BulbBottomCurvePainter extends CustomPainter {
   bool shouldRepaint(BulbBottomCurvePainter oldDelegate) => true;
 }
 
+class LinePainter extends CustomPainter {
+  Offset startPosition;
+  Offset endPosition;
+  bool isOff;
+  LinePainter(this.startPosition, this.endPosition, this.isOff);
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = isOff == true
+          ? ColorOff.mediumGreyColor
+          : Color.fromARGB(255, 198, 240, 30)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 2;
+
+    Paint paint2 = Paint()
+      ..color = ColorOff.mediumGreyColor
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3;
+
+    Path path = Path();
+    path.moveTo(startPosition.dx - 5, startPosition.dy - 40);
+    path.lineTo(startPosition.dx - 10, startPosition.dy - 55);
+
+    canvas.drawPath(path, paint);
+
+    path.moveTo(startPosition.dx + 5, startPosition.dy - 40);
+    path.lineTo(startPosition.dx + 10, startPosition.dy - 55);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(LinePainter oldDelegate) => true;
+}
+
+class BulbOvalPainter extends CustomPainter {
+  Offset startPosition;
+  Offset endPosition;
+  bool isOff;
+  BulbOvalPainter(this.startPosition, this.endPosition, this.isOff);
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = isOff == true ? ColorOff.lightGreyColor : ColorOn.blackColor
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 4;
+
+    Paint paint2 = Paint()
+      ..color = isOff == true ? ColorOff.ovalColor : ColorOn.ovalColor
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3;
+
+    Path path = Path();
+    path.moveTo(startPosition.dx + 15, startPosition.dy - 40);
+    path.quadraticBezierTo(startPosition.dx, startPosition.dy - 55,
+        startPosition.dx - 15, startPosition.dy - 40);
+    path.quadraticBezierTo(startPosition.dx, startPosition.dy - 30,
+        startPosition.dx + 15, startPosition.dy - 40);
+
+    canvas.drawPath(path, paint);
+    canvas.drawPath(path, paint2);
+  }
+
+  @override
+  bool shouldRepaint(BulbOvalPainter oldDelegate) => true;
+}
+
 class BulbPainter extends CustomPainter {
   Offset startPosition;
   Offset endPosition;
@@ -78,8 +153,14 @@ class BulbPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = ColorOff.lightGreyColor
+      ..color = isOff == true ? ColorOff.lightGreyColor : ColorOn.blackColor
       ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3;
+
+    Paint paint2 = Paint()
+      ..color = isOff == true ? ColorOff.green : ColorOn.bulbColor
+      ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2;
 
@@ -97,6 +178,7 @@ class BulbPainter extends CustomPainter {
     path.close();
 
     canvas.drawPath(path, paint);
+    canvas.drawPath(path, paint2);
   }
 
   @override
@@ -272,11 +354,22 @@ class _CordStretchState extends State<Development>
           CustomPaint(
               child: Container(),
               painter: BulbPainter(startPosition, endPosition, isOff)),
+
           //bulb bottom cord
           CustomPaint(
               child: Container(),
               painter:
                   BulbBottomCurvePainter(startPosition, endPosition, isOff)),
+
+          //bulb bottom cord
+          CustomPaint(
+              child: Container(),
+              painter: BulbOvalPainter(startPosition, endPosition, isOff)),
+
+          //oval painter
+          CustomPaint(
+              child: Container(),
+              painter: LinePainter(startPosition, endPosition, isOff)),
 
           showCord == true
               ? GestureDetector(
