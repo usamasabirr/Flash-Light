@@ -334,13 +334,17 @@ class _CordStretchState extends State<Development>
 
   @override
   Widget build(BuildContext context) {
+    print(widget.mediaHeight);
+    print(widget.mediaWidth);
+    print(MediaQuery.of(context).size.height);
+    print(MediaQuery.of(context).size.width);
     return Scaffold(
         body: SafeArea(
       child: Stack(
         children: [
           Container(
-            height: widget.mediaHeight,
-            width: widget.mediaWidth,
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
             color: isOff == true ? ColorOff.greyColor : ColorOn.yellowColor,
           ),
           showAnimation == true

@@ -4,7 +4,7 @@ import 'package:flash_light/development/development.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(DevicePreview(enabled: false, builder: (context) => MyApp()));
+  runApp(DevicePreview(enabled: true, builder: (context) => MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var topPadding = MediaQuery.of(context).padding.top;
     var bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    var height = mediaHeight - topPadding - bottomPadding;
+    var height = mediaHeight - topPadding;
 
     return Scaffold(
         body: SafeArea(
