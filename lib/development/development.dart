@@ -1,7 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flashlight/flashlight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:torch_light/torch_light.dart';
 
 class ColorOff {
   static final extraLightGreyColor = Color(0xffD9D9D9);
@@ -225,6 +227,7 @@ class AnimatedCordPainter extends CustomPainter {
 class Development extends StatefulWidget {
   double mediaWidth;
   double mediaHeight;
+  bool flag = false;
   Development({super.key, required this.mediaWidth, required this.mediaHeight});
 
   @override
@@ -235,6 +238,8 @@ class _CordStretchState extends State<Development>
     with SingleTickerProviderStateMixin {
   late Offset startPosition;
   late Offset endPosition;
+
+  bool flag = false;
 
   late AnimationController animationController;
   late Animation cordAnimation;
@@ -334,10 +339,6 @@ class _CordStretchState extends State<Development>
 
   @override
   Widget build(BuildContext context) {
-    print(widget.mediaHeight);
-    print(widget.mediaWidth);
-    print(MediaQuery.of(context).size.height);
-    print(MediaQuery.of(context).size.width);
     return Scaffold(
         body: SafeArea(
       child: Container(
@@ -392,6 +393,13 @@ class _CordStretchState extends State<Development>
                       });
                     },
                     onPanEnd: (details) async {
+                      if (flag == false) {
+                        Flashlight.lightOn();
+                      } else {
+                        Flashlight.lightOff();
+                      }
+                      flag = !flag;
+
                       await player.play(AssetSource('audio/switch.mp3'));
                       setState(() {
                         isOff = !isOff;
@@ -423,5 +431,38 @@ class _CordStretchState extends State<Development>
         ),
       ),
     ));
+  }
+
+  Future<bool> _isTorchAvailable(BuildContext context) async {
+    try {
+      return await TorchLight.isTorchAvailable();
+    } on Exception catch (_) {
+      _showMessage(
+        'Could not check if the device has an available torch',
+        context,
+      );
+      rethrow;
+    }
+  }
+
+  Future<void> _enableTorch(BuildContext context) async {
+    try {
+      await TorchLight.enableTorch();
+    } on Exception catch (_) {
+      _showMessage('Could not enable torch', context);
+    }
+  }
+
+  Future<void> _disableTorch(BuildContext context) async {
+    try {
+      await TorchLight.disableTorch();
+    } on Exception catch (_) {
+      _showMessage('Could not disable torch', context);
+    }
+  }
+
+  void _showMessage(String message, BuildContext context) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
