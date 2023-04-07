@@ -168,14 +168,14 @@ class BulbPainter extends CustomPainter {
     var path = Path();
     path.addArc(
         Rect.fromCenter(
-            center: Offset(size.width / 2, size.height / 2 - 80),
+            center: Offset(startPosition.dx, startPosition.dy - 80),
             width: 70,
             height: 70),
         2.35619,
         4.77);
-    path.lineTo(size.width / 2 + 10, size.height / 2 - 20);
-    path.quadraticBezierTo(size.width / 2, size.height / 2 - 12,
-        size.width / 2 - 10, size.height / 2 - 20);
+    path.lineTo(startPosition.dx + 10, startPosition.dy - 20);
+    path.quadraticBezierTo(startPosition.dx, startPosition.dy - 12,
+        startPosition.dx - 10, startPosition.dy - 20);
     path.close();
 
     canvas.drawPath(path, paint);
@@ -340,83 +340,87 @@ class _CordStretchState extends State<Development>
     print(MediaQuery.of(context).size.width);
     return Scaffold(
         body: SafeArea(
-      child: Stack(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            color: isOff == true ? ColorOff.greyColor : ColorOn.yellowColor,
-          ),
-          showAnimation == true
-              ? CustomPaint(
-                  painter: AnimatedCordPainter(
-                      startPosition,
-                      upperCurveAnimation.value,
-                      lowerCurveAnimation.value,
-                      lowerCurveCompressAnimation.value,
-                      isOff),
-                  child: SizedBox(),
-                )
-              : IgnorePointer(),
-          //bulb root
-          CustomPaint(
-              child: Container(),
-              painter: BulbPainter(startPosition, endPosition, isOff)),
+      child: Container(
+        height: widget.mediaHeight,
+        width: widget.mediaWidth,
+        child: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: isOff == true ? ColorOff.greyColor : ColorOn.yellowColor,
+            ),
+            showAnimation == true
+                ? CustomPaint(
+                    painter: AnimatedCordPainter(
+                        startPosition,
+                        upperCurveAnimation.value,
+                        lowerCurveAnimation.value,
+                        lowerCurveCompressAnimation.value,
+                        isOff),
+                    child: SizedBox(),
+                  )
+                : IgnorePointer(),
+            //bulb root
+            CustomPaint(
+                child: Container(),
+                painter: BulbPainter(startPosition, endPosition, isOff)),
 
-          //bulb bottom cord
-          CustomPaint(
-              child: Container(),
-              painter:
-                  BulbBottomCurvePainter(startPosition, endPosition, isOff)),
+            //bulb bottom cord
+            CustomPaint(
+                child: Container(),
+                painter:
+                    BulbBottomCurvePainter(startPosition, endPosition, isOff)),
 
-          //bulb bottom cord
-          CustomPaint(
-              child: Container(),
-              painter: BulbOvalPainter(startPosition, endPosition, isOff)),
+            //bulb bottom cord
+            CustomPaint(
+                child: Container(),
+                painter: BulbOvalPainter(startPosition, endPosition, isOff)),
 
-          //oval painter
-          CustomPaint(
-              child: Container(),
-              painter: LinePainter(startPosition, endPosition, isOff)),
+            //oval painter
+            CustomPaint(
+                child: Container(),
+                painter: LinePainter(startPosition, endPosition, isOff)),
 
-          showCord == true
-              ? GestureDetector(
-                  onPanDown: (details) {},
-                  onPanUpdate: (details) {
-                    setState(() {
-                      endPosition = Offset(
-                          details.globalPosition.dx, details.globalPosition.dy);
-                    });
-                  },
-                  onPanEnd: (details) async {
-                    await player.play(AssetSource('audio/switch.mp3'));
-                    setState(() {
-                      isOff = !isOff;
-                    });
-                    cordAnimation = Tween<Offset>(
-                            begin: endPosition,
-                            end: Offset(widget.mediaWidth / 2,
-                                widget.mediaHeight / 2 + 100))
-                        .animate(
-                      CurvedAnimation(
-                        parent: animationController,
-                        curve: Interval(0, 0.2, curve: Curves.linear),
-                      ),
-                    )..addListener(() {
-                        setState(() {
-                          endPosition = cordAnimation.value;
-                        });
+            showCord == true
+                ? GestureDetector(
+                    onPanDown: (details) {},
+                    onPanUpdate: (details) {
+                      setState(() {
+                        endPosition = Offset(details.globalPosition.dx,
+                            details.globalPosition.dy);
                       });
+                    },
+                    onPanEnd: (details) async {
+                      await player.play(AssetSource('audio/switch.mp3'));
+                      setState(() {
+                        isOff = !isOff;
+                      });
+                      cordAnimation = Tween<Offset>(
+                              begin: endPosition,
+                              end: Offset(widget.mediaWidth / 2,
+                                  widget.mediaHeight / 2 + 100))
+                          .animate(
+                        CurvedAnimation(
+                          parent: animationController,
+                          curve: Interval(0, 0.2, curve: Curves.linear),
+                        ),
+                      )..addListener(() {
+                          setState(() {
+                            endPosition = cordAnimation.value;
+                          });
+                        });
 
-                    animationController.forward();
-                  },
-                  child: CustomPaint(
-                    painter: CordPainter(startPosition, endPosition, isOff),
-                    child: Container(),
-                  ),
-                )
-              : IgnorePointer(),
-        ],
+                      animationController.forward();
+                    },
+                    child: CustomPaint(
+                      painter: CordPainter(startPosition, endPosition, isOff),
+                      child: Container(),
+                    ),
+                  )
+                : IgnorePointer(),
+          ],
+        ),
       ),
     ));
   }
