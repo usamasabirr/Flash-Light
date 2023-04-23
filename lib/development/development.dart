@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flashlight/flashlight.dart';
+//import 'package:flashlight/flashlight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -279,6 +280,10 @@ class _CordStretchState extends State<Development>
 
   initializeTween() {}
 
+  playMusic() async {
+    await player.play(AssetSource('audio/switch.mp3'));
+  }
+
   @override
   void initState() {
     startPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2);
@@ -322,6 +327,7 @@ class _CordStretchState extends State<Development>
 
     animationController.addStatusListener((status) {
       if (animationController.status == AnimationStatus.completed) {
+        print('Animation Completed');
         animationController.reset();
         setState(() {
           //isOff = !isOff;
@@ -399,8 +405,7 @@ class _CordStretchState extends State<Development>
                         Flashlight.lightOff();
                       }
                       flag = !flag;
-
-                      await player.play(AssetSource('audio/switch.mp3'));
+                      playMusic();
                       setState(() {
                         isOff = !isOff;
                       });
@@ -431,38 +436,5 @@ class _CordStretchState extends State<Development>
         ),
       ),
     ));
-  }
-
-  Future<bool> _isTorchAvailable(BuildContext context) async {
-    try {
-      return await TorchLight.isTorchAvailable();
-    } on Exception catch (_) {
-      _showMessage(
-        'Could not check if the device has an available torch',
-        context,
-      );
-      rethrow;
-    }
-  }
-
-  Future<void> _enableTorch(BuildContext context) async {
-    try {
-      await TorchLight.enableTorch();
-    } on Exception catch (_) {
-      _showMessage('Could not enable torch', context);
-    }
-  }
-
-  Future<void> _disableTorch(BuildContext context) async {
-    try {
-      await TorchLight.disableTorch();
-    } on Exception catch (_) {
-      _showMessage('Could not disable torch', context);
-    }
-  }
-
-  void _showMessage(String message, BuildContext context) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
   }
 }

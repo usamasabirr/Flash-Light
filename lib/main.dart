@@ -1,10 +1,9 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:flash_light/development/development.dart';
 
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(DevicePreview(enabled: true, builder: (context) => MyApp()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -33,6 +32,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Future<double?> whenNotZero(Stream<double> source) async {
+    await for (double value in source) {
+      print("Width:" + value.toString());
+      if (value > 0) {
+        print("Width > 0: " + value.toString());
+        return value;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var mediaHeight = MediaQuery.of(context).size.height;
@@ -51,8 +60,22 @@ class _MyHomePageState extends State<MyHomePage> {
           //   height: mediaHeight,
           //   width: mediaWidth,
           // )
-
-          Development(mediaWidth: mediaWidth, mediaHeight: mediaHeight),
+          FutureBuilder(
+              future: whenNotZero(
+                Stream<double>.periodic(Duration(milliseconds: 50),
+                    (x) => MediaQuery.of(context).size.width),
+              ),
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data! > 0) {
+                    return Development(
+                        mediaWidth: mediaWidth, mediaHeight: mediaHeight);
+                  }
+                } else {
+                  return Container();
+                }
+                return Text('Loading');
+              }),
     ));
   }
 }

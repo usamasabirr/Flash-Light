@@ -38,7 +38,7 @@ dependencies:
   drawing_animation: ^1.0.1
   animated_path: ^0.0.2
   spring: ^2.0.2
-  device_preview: ^1.1.0
+  #device_preview: ^1.1.0
   audioplayers: ^3.0.1
   torch_light: ^1.0.0
   flashlight: ^0.1.1
