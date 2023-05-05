@@ -153,14 +153,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.4"
-  flashlight:
-    dependency: "direct main"
-    description:
-      name: flashlight
-      sha256: "2b1fddb78639ca4dd9c83836a43ad2f46a9b91a3e619b08e2d71d1686288e6fc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.1"
   flutter:
     dependency: "direct main"
     description: flutter

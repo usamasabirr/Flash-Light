@@ -1,5 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flashlight/flashlight.dart';
+//import 'package:flashlight/flashlight.dart';
 //import 'package:flashlight/flashlight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -242,13 +242,18 @@ class _CordStretchState extends State<Development>
 
   bool flag = false;
 
+  //to control the animation
   late AnimationController animationController;
+
+  //store different type of animations
   late Animation cordAnimation;
   late Animation upperCurveAnimation;
   late Animation lowerCurveAnimation;
   late Animation lowerCurveCompressAnimation;
 
+  //when true start showing the animation
   bool showAnimation = false;
+
   bool showCord = true;
 
   bool isOff = true;
@@ -286,24 +291,28 @@ class _CordStretchState extends State<Development>
 
   @override
   void initState() {
+    //get the start and end position for the cord
     startPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2);
     endPosition = Offset(widget.mediaWidth / 2, widget.mediaHeight / 2 + 100);
 
     animationController =
         AnimationController(vsync: this, duration: Duration(seconds: 1));
 
+    //create animaiton for the upper curve
     upperCurveAnimation = upperCurveTween.animate(CurvedAnimation(
         parent: animationController, curve: Interval(0.18, 1.0)))
       ..addListener(() {
         setState(() {});
       });
 
+    //create animation for the lower curve
     lowerCurveAnimation = lowerCurveTween.animate(CurvedAnimation(
         parent: animationController, curve: Interval(0.18, 1.0)))
       ..addListener(() {
         setState(() {});
       });
 
+    //create animation for compress cord effect
     lowerCurveCompressAnimation = lowerCurveCompressTween.animate(
         CurvedAnimation(
             parent: animationController, curve: Interval(0.18, 1.0)))
@@ -311,6 +320,7 @@ class _CordStretchState extends State<Development>
         setState(() {});
       });
 
+    //listen to any changes
     animationController.addListener(() {
       print('value is ${animationController.value}');
       double currentDuration =
@@ -325,6 +335,7 @@ class _CordStretchState extends State<Development>
       }
     });
 
+    //listen to the status of the animation i.e completed, stopped etc
     animationController.addStatusListener((status) {
       if (animationController.status == AnimationStatus.completed) {
         print('Animation Completed');
@@ -352,11 +363,15 @@ class _CordStretchState extends State<Development>
         width: widget.mediaWidth,
         child: Stack(
           children: [
+            //first child of stack will be a full screen size container
+            //stack will take the length of the first child
             Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               color: isOff == true ? ColorOff.greyColor : ColorOn.yellowColor,
             ),
+            //conditionalRendering: if show animation is true show the animated cord
+            //other wise show nothing
             showAnimation == true
                 ? CustomPaint(
                     painter: AnimatedCordPainter(
@@ -389,26 +404,38 @@ class _CordStretchState extends State<Development>
                 child: Container(),
                 painter: LinePainter(startPosition, endPosition, isOff)),
 
+            //Conditional Rendering: if true show the original cord
             showCord == true
                 ? GestureDetector(
                     onPanDown: (details) {},
                     onPanUpdate: (details) {
+                      //when ever you drag your finger change the
+                      //endposition with new coordinates and update
+                      //the state. you will be able to achieve the
+                      //drag effect
                       setState(() {
                         endPosition = Offset(details.globalPosition.dx,
                             details.globalPosition.dy);
                       });
                     },
+                    //when you lift you finger up show the animation
                     onPanEnd: (details) async {
-                      if (flag == false) {
-                        Flashlight.lightOn();
-                      } else {
-                        Flashlight.lightOff();
-                      }
+                      ////Uncomment: the below lines to turn the flash light on and off too
+
+                      // if (flag == false) {
+                      //   Flashlight.lightOn();
+                      // } else {
+                      //   Flashlight.lightOff();
+                      // }
                       flag = !flag;
+                      //function to play the music
                       playMusic();
+                      //change flag value to depict the on
+                      // and off effect accordingly
                       setState(() {
                         isOff = !isOff;
                       });
+                      //animate the cord back to the original position
                       cordAnimation = Tween<Offset>(
                               begin: endPosition,
                               end: Offset(widget.mediaWidth / 2,

@@ -44,38 +44,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //get the height and width of the screen
     var mediaHeight = MediaQuery.of(context).size.height;
     var mediaWidth = MediaQuery.of(context).size.width;
-    var topPadding = MediaQuery.of(context).padding.top;
-    var bottomPadding = MediaQuery.of(context).padding.bottom;
-
-    var height = mediaHeight - topPadding;
 
     return Scaffold(
         body: SafeArea(
-      child:
-
-          //         Container(
-          //   color: Colors.grey,
-          //   height: mediaHeight,
-          //   width: mediaWidth,
-          // )
-          FutureBuilder(
-              future: whenNotZero(
-                Stream<double>.periodic(Duration(milliseconds: 50),
-                    (x) => MediaQuery.of(context).size.width),
-              ),
-              builder: (BuildContext context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data! > 0) {
-                    return Development(
-                        mediaWidth: mediaWidth, mediaHeight: mediaHeight);
-                  }
-                } else {
-                  return Container();
-                }
-                return Text('Loading');
-              }),
+      //When creating the build for release mode
+      //mediaquery returns 0 sometimes, so we are making sure
+      //that if mediaquery return 0 show Loading Text
+      //otherwise go to the development screen
+      child: FutureBuilder(
+          future: whenNotZero(
+            Stream<double>.periodic(Duration(milliseconds: 50),
+                (x) => MediaQuery.of(context).size.width),
+          ),
+          builder: (BuildContext context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data! > 0) {
+                return Development(
+                    mediaWidth: mediaWidth, mediaHeight: mediaHeight);
+              }
+            } else {
+              return Container();
+            }
+            return Text('Loading');
+          }),
     ));
   }
 }

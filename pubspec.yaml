@@ -41,7 +41,7 @@ dependencies:
   #device_preview: ^1.1.0
   audioplayers: ^3.0.1
   torch_light: ^1.0.0
-  flashlight: ^0.1.1
+  #flashlight: ^0.1.1
 
 dev_dependencies:
   flutter_test:
